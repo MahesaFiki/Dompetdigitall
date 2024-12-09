@@ -108,7 +108,7 @@ data = load_data()
 # Streamlit: Header
 st.markdown("""
     <div style="background-color: #3498db; padding: 15px; border-radius: 10px;">
-        <h1 style="color: white; text-align: center;">🌐 Dompet Digital</h1>
+        <h1 style="color: white; text-align: center;">🌐 Dompet Digital EasySave</h1>
     </div>
 """, unsafe_allow_html=True)
 
