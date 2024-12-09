@@ -49,6 +49,7 @@ def login():
         else:
             st.session_state["username"] = username
             st.success(f"Selamat datang, {username}!")
+            st.experimental_rerun()
 
 # Fungsi untuk menambah saldo
 def tambah_saldo():
@@ -101,6 +102,7 @@ def cek_riwayat():
 def logout():
     st.session_state.clear()
     st.success("Anda telah logout.")
+    st.experimental_rerun()
 
 # Inisialisasi data
 data = load_data()
