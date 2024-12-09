@@ -25,12 +25,12 @@ def format_rupiah(amount):
 def register():
     st.subheader("📝 Registrasi Akun")
     username = st.text_input("Nama Pengguna")
-    pin = st.text_input("Buat PIN (4 digit)", type="password")
+    pin = st.text_input("Buat PIN (6 digit)", type="password")
     if st.button("Buat Akun"):
         if username in data:
             st.error("Akun sudah ada!")
-        elif len(pin) != 4 or not pin.isdigit():
-            st.error("PIN harus 4 digit angka!")
+        elif len(pin) != 6 or not pin.isdigit():
+            st.error("PIN harus 6 digit angka!")
         else:
             data[username] = {"pin": pin, "saldo": 0, "riwayat": []}
             save_data(data)
