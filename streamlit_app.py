@@ -99,20 +99,27 @@ def cek_riwayat():
 
 # Fungsi untuk logout
 def logout():
-    st.subheader("🚪 Logout")
-    st.write("Apakah Anda yakin ingin logout?")
-    
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("Iya"):
-            st.session_state.clear()
-            st.success("Anda telah logout.")
-    with col2:
-        if st.button("Tidak"):
-            st.info("Logout dibatalkan.")
+    st.session_state.clear()
+    st.success("Anda telah logout.")
 
 # Inisialisasi data
 data = load_data()
+
+# Menambahkan gambar latar belakang dari URL online
+background_url = "https://www.shutterstock.com/image-vector/digital-wallet-ewallet-online-payment-600nw-2522146297.jpg"  # Ganti dengan URL gambar yang sesuai
+st.markdown(
+    f"""
+    <style>
+    body {{
+        background-image: url('{background_url}');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+    }}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # Streamlit: Header
 st.markdown("""
