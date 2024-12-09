@@ -21,116 +21,105 @@ def save_data(data):
 data = load_data()
 
 # Fungsi untuk registrasi atau membuat akun
-def create_account():
-    username = input("Masukkan nama pengguna: ")
+def create_account(username, pin):
     if username in data:
-        print("Akun sudah ada!")
-        return
-    pin = input("Buat PIN (4 digit): ")
+        return "Akun sudah ada!"
     if len(pin) != 4 or not pin.isdigit():
-        print("PIN harus 4 digit angka!")
-        return
+        return "PIN harus 4 digit angka!"
     data[username] = {"pin": pin, "saldo": 0, "riwayat": []}
     save_data(data)
-    print("Akun berhasil dibuat!")
+    return "Akun berhasil dibuat!"
 
 # Fungsi untuk login
-def login():
-    username = input("Masukkan nama pengguna: ")
+def login(username, pin):
     if username not in data:
-        print("Akun tidak ditemukan!")
-        return None
-    pin = input("Masukkan PIN: ")
+        return False, "Akun tidak ditemukan!"
     if data[username]["pin"] != pin:
-        print("PIN salah!")
-        return None
-    print("Login berhasil!")
-    return username
+        return False, "PIN salah!"
+    return True, "Login berhasil!"
 
 # Fungsi untuk menambah saldo
-def tambah_saldo(username):
-    jumlah = int(input("Masukkan jumlah saldo yang ingin ditambahkan: "))
+def tambah_saldo(username, jumlah):
     if jumlah <= 0:
-        print("Jumlah harus lebih dari 0!")
-        return
+        return "Jumlah harus lebih dari 0!"
     data[username]["saldo"] += jumlah
     save_data(data)
-    print(f"Saldo berhasil ditambahkan. Saldo saat ini: {data[username]['saldo']}")
+    return f"Saldo berhasil ditambahkan. Saldo saat ini: {data[username]['saldo']}"
 
-# Fungsi untuk transfer dengan verifikasi PIN
-def transfer(username):
-    penerima = input("Masukkan nama pengguna penerima: ")
-    if penerima not in data:
-        print("Penerima tidak ditemukan!")
-        return
-    jumlah = int(input("Masukkan jumlah transfer: "))
-    if jumlah <= 0 or jumlah > data[username]["saldo"]:
-        print("Saldo tidak cukup atau jumlah tidak valid!")
-        return
-    pin = input("Masukkan PIN untuk konfirmasi transfer: ")
+# Fungsi untuk transfer
+def transfer(username, penerima, jumlah, pin):
     if data[username]["pin"] != pin:
-        print("PIN salah! Transfer dibatalkan.")
-        return
+        return "PIN salah! Transfer dibatalkan."
+    if penerima not in data:
+        return "Penerima tidak ditemukan!"
+    if jumlah <= 0 or jumlah > data[username]["saldo"]:
+        return "Saldo tidak cukup atau jumlah tidak valid!"
     data[username]["saldo"] -= jumlah
     data[penerima]["saldo"] += jumlah
     data[username]["riwayat"].append(f"Transfer ke {penerima}: {jumlah}")
     data[penerima]["riwayat"].append(f"Diterima dari {username}: {jumlah}")
     save_data(data)
-    print("Transfer berhasil!")
+    return "Transfer berhasil!"
 
 # Fungsi untuk cek saldo
 def cek_saldo(username):
-    print(f"Saldo saat ini: {data[username]['saldo']}")
+    return f"Saldo saat ini: {data[username]['saldo']}"
 
 # Fungsi untuk cek riwayat transfer
 def cek_riwayat(username):
-    print("Riwayat transaksi:")
-    for riwayat in data[username]["riwayat"]:
-        print(f"- {riwayat}")
+    return data[username]["riwayat"]
 
-# Menu utama
-def main():
-    while True:
-        print("\n=== Dompet Digital ===")
-        print("1. Buat Akun")
-        print("2. Login")
-        print("3. Keluar")
-        pilihan = input("Pilih menu: ")
-        
-        if pilihan == "1":
-            create_account()
-        elif pilihan == "2":
-            user = login()
-            if user:
-                while True:
-                    print("\n=== Menu Utama ===")
-                    print("1. Tambah Saldo")
-                    print("2. Transfer")
-                    print("3. Cek Saldo")
-                    print("4. Cek Riwayat Transfer")
-                    print("5. Logout")
-                    sub_pilihan = input("Pilih menu: ")
-                    
-                    if sub_pilihan == "1":
-                        tambah_saldo(user)
-                    elif sub_pilihan == "2":
-                        transfer(user)
-                    elif sub_pilihan == "3":
-                        cek_saldo(user)
-                    elif sub_pilihan == "4":
-                        cek_riwayat(user)
-                    elif sub_pilihan == "5":
-                        print("Logout berhasil!")
-                        break
-                    else:
-                        print("Pilihan tidak valid!")
-        elif pilihan == "3":
-            print("Keluar dari aplikasi. Sampai jumpa!")
-            break
+# Aplikasi Streamlit
+st.title("Dompet Digital")
+
+# Halaman login dan registrasi
+menu = st.sidebar.selectbox("Menu", ["Login", "Registrasi"])
+
+if menu == "Registrasi":
+    st.subheader("Registrasi Akun")
+    username = st.text_input("Nama Pengguna")
+    pin = st.text_input("Buat PIN (4 digit)", type="password")
+    if st.button("Buat Akun"):
+        if username and pin:
+            result = create_account(username, pin)
+            st.success(result)
         else:
-            print("Pilihan tidak valid!")
+            st.error("Harap isi semua kolom!")
 
-if __name__ == "__main__":
-    main()
-
-
+elif menu == "Login":
+    st.subheader("Login")
+    username = st.text_input("Nama Pengguna")
+    pin = st.text_input("PIN", type="password")
+    if st.button("Login"):
+        if username and pin:
+            success, message = login(username, pin)
+            if success:
+                st.success(message)
+                # Menu utama setelah login
+                page = st.selectbox("Menu Utama", ["Tambah Saldo", "Transfer", "Cek Saldo", "Riwayat Transfer"])
+                if page == "Tambah Saldo":
+                    jumlah = st.number_input("Jumlah Saldo", min_value=0, step=1)
+                    if st.button("Tambah"):
+                        result = tambah_saldo(username, jumlah)
+                        st.success(result)
+                elif page == "Transfer":
+                    penerima = st.text_input("Nama Penerima")
+                    jumlah = st.number_input("Jumlah Transfer", min_value=0, step=1)
+                    pin_konfirmasi = st.text_input("Konfirmasi PIN", type="password")
+                    if st.button("Kirim"):
+                        result = transfer(username, penerima, jumlah, pin_konfirmasi)
+                        if "berhasil" in result:
+                            st.success(result)
+                        else:
+                            st.error(result)
+                elif page == "Cek Saldo":
+                    st.info(cek_saldo(username))
+                elif page == "Riwayat Transfer":
+                    riwayat = cek_riwayat(username)
+                    st.write("Riwayat Transaksi:")
+                    for item in riwayat:
+                        st.write(f"- {item}")
+            else:
+                st.error(message)
+        else:
+            st.error("Harap isi semua kolom!")
