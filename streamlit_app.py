@@ -1,7 +1,6 @@
 import streamlit as st
 import json
 import os
-import bcrypt
 
 # File untuk menyimpan data
 DATA_FILE = "dompet_digital.json"
@@ -22,14 +21,6 @@ def save_data(data):
 def format_rupiah(amount):
     return f"Rp {amount:,.0f}".replace(",", ".")
 
-# Fungsi untuk membuat hash dari PIN
-def hash_pin(pin):
-    return bcrypt.hashpw(pin.encode(), bcrypt.gensalt()).decode()
-
-# Fungsi untuk memverifikasi PIN dengan hash yang tersimpan
-def verify_pin(pin, hashed_pin):
-    return bcrypt.checkpw(pin.encode(), hashed_pin.encode())
-
 # Fungsi untuk registrasi akun
 def register():
     st.subheader("📝 Registrasi Akun")
@@ -41,8 +32,7 @@ def register():
         elif len(pin) != 6 or not pin.isdigit():
             st.error("PIN harus 6 digit angka!")
         else:
-            hashed_pin = hash_pin(pin)
-            data[username] = {"pin": hashed_pin, "saldo": 0, "riwayat": []}
+            data[username] = {"pin": pin, "saldo": 0, "riwayat": []}
             save_data(data)
             st.success("Akun berhasil dibuat!")
 
@@ -54,7 +44,7 @@ def login():
     if st.button("Login"):
         if username not in data:
             st.error("Akun tidak ditemukan!")
-        elif not verify_pin(pin, data[username]["pin"]):
+        elif data[username]["pin"] != pin:
             st.error("PIN salah!")
         else:
             st.session_state["username"] = username
@@ -80,7 +70,7 @@ def tarik_saldo():
             st.error("Jumlah tarik harus lebih besar dari 0!")
         elif jumlah > data[st.session_state["username"]]["saldo"]:
             st.error("Saldo tidak cukup!")
-        elif not verify_pin(pin, data[st.session_state["username"]]["pin"]):
+        elif data[st.session_state["username"]]["pin"] != pin:
             st.error("PIN salah!")
         else:
             data[st.session_state["username"]]["saldo"] -= jumlah
@@ -100,7 +90,7 @@ def transfer():
             st.error("Penerima tidak ditemukan!")
         elif jumlah <= 0 or jumlah > data[st.session_state["username"]]["saldo"]:
             st.error("Saldo tidak cukup atau jumlah tidak valid!")
-        elif not verify_pin(pin, data[st.session_state["username"]]["pin"]):
+        elif data[st.session_state["username"]]["pin"] != pin:
             st.error("PIN salah!")
         else:
             data[st.session_state["username"]]["saldo"] -= jumlah
