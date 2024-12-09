@@ -100,22 +100,37 @@ def logout():
 # Inisialisasi data
 data = load_data()
 
-# Streamlit: Dekorasi CSS
+# Streamlit: Animasi CSS
 st.markdown("""
     <style>
         body {
-            background-color: #f9f9f9;
-            color: #2c3e50;
+            margin: 0;
+            padding: 0;
+            background: radial-gradient(circle, #84fab0, #8fd3f4);
+            overflow: hidden;
         }
-        .css-18e3th9 {
-            padding: 20px;
-            border-radius: 15px;
+        .bubble {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            animation: rise 10s infinite ease-in-out;
         }
-        h1, h2, h3, h4 {
-            font-family: 'Arial', sans-serif;
-            color: #3498db;
+        @keyframes rise {
+            0% { transform: translateY(100vh); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-10vh); opacity: 0; }
         }
+        .bubble:nth-child(odd) { animation-duration: 12s; }
+        .bubble:nth-child(even) { animation-duration: 8s; }
     </style>
+    <div id="bubbles">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
 """, unsafe_allow_html=True)
 
 # Streamlit: Header
