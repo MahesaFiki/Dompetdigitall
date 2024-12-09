@@ -106,40 +106,40 @@ st.markdown("""
         body {
             margin: 0;
             padding: 0;
-            background: linear-gradient(120deg, #84fab0, #8fd3f4);
+            background: #8fd3f4;
+            background: radial-gradient(circle, #84fab0, #8fd3f4);
             overflow: hidden;
         }
-        .bubble {
+        .circle {
             position: absolute;
-            width: 20px;
-            height: 20px;
-            background: rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            animation: rise 5s infinite;
+            background: rgba(255, 255, 255, 0.2);
+            animation: float 10s ease-in-out infinite;
         }
-        @keyframes rise {
+        @keyframes float {
             0% {
                 transform: translateY(0);
-                opacity: 1;
+            }
+            50% {
+                transform: translateY(-20px);
             }
             100% {
-                transform: translateY(-1000px);
-                opacity: 0;
+                transform: translateY(0);
             }
         }
     </style>
     <script>
-        const bubbleContainer = document.createElement('div');
-        for (let i = 0; i < 50; i++) {
-            const bubble = document.createElement('div');
-            bubble.className = 'bubble';
-            bubble.style.left = Math.random() * 100 + '%';
-            bubble.style.animationDelay = Math.random() * 5 + 's';
-            bubble.style.animationDuration = Math.random() * 3 + 5 + 's';
-            bubble.style.width = bubble.style.height = Math.random() * 15 + 5 + 'px';
-            bubbleContainer.appendChild(bubble);
+        const body = document.body;
+        for (let i = 0; i < 30; i++) {
+            const circle = document.createElement('div');
+            circle.className = 'circle';
+            circle.style.width = circle.style.height = `${Math.random() * 100 + 50}px`;
+            circle.style.left = `${Math.random() * 100}vw`;
+            circle.style.top = `${Math.random() * 100}vh`;
+            circle.style.animationDuration = `${Math.random() * 5 + 5}s`;
+            circle.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+            body.appendChild(circle);
         }
-        document.body.appendChild(bubbleContainer);
     </script>
 """, unsafe_allow_html=True)
 
