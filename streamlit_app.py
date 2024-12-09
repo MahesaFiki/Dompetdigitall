@@ -39,9 +39,9 @@ def register():
 # Fungsi untuk login
 def login():
     st.subheader("🔑 Login")
-    username = st.text_input("Nama Pengguna")
-    pin = st.text_input("PIN", type="password")
-    if st.button("Login"):
+    username = st.text_input("Nama Pengguna", key="login_username")
+    pin = st.text_input("PIN", type="password", key="login_pin")
+    if st.button("Login", key="login_button"):
         if username not in data:
             st.error("Akun tidak ditemukan!")
         elif data[username]["pin"] != pin:
@@ -50,6 +50,7 @@ def login():
             st.session_state["username"] = username
             st.success(f"Selamat datang, {username}! 🤑")
             st.experimental_rerun()
+
 
 # Fungsi untuk menambah saldo
 def tambah_saldo():
