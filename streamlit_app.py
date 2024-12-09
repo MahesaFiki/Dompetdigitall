@@ -48,7 +48,6 @@ def login():
             st.error("PIN salah!")
         else:
             st.session_state["username"] = username
-            st.session_state["menu"] = "Cek Saldo"  # Default setelah login
             st.success(f"Selamat datang, {username}!")
 
 # Fungsi untuk menambah saldo
@@ -140,20 +139,10 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# Atur menu aktif dalam session state
-if "menu" not in st.session_state:
-    st.session_state["menu"] = "Login"
-
-# Menu utama
+# Cek apakah pengguna sudah login
 if "username" in st.session_state:
     st.sidebar.subheader(f"Selamat datang, {st.session_state['username']}!")
-    menu = st.sidebar.radio(
-        "Menu",
-        ["Tambah Saldo", "Tarik Saldo", "Transfer", "Cek Saldo", "Riwayat Transfer", "Logout"],
-        index=["Tambah Saldo", "Tarik Saldo", "Transfer", "Cek Saldo", "Riwayat Transfer", "Logout"].index(st.session_state["menu"]),
-        key="menu_selector",
-        on_change=lambda: st.session_state.update(menu=st.session_state["menu_selector"])
-    )
+    menu = st.sidebar.radio("Menu", ["Tambah Saldo", "Tarik Saldo", "Transfer", "Cek Saldo", "Riwayat Transfer", "Logout"])
     
     if menu == "Tambah Saldo":
         tambah_saldo()
@@ -168,13 +157,7 @@ if "username" in st.session_state:
     elif menu == "Logout":
         logout()
 else:
-    menu = st.sidebar.radio(
-        "Menu",
-        ["Login", "Registrasi"],
-        index=["Login", "Registrasi"].index(st.session_state["menu"]),
-        key="menu_selector",
-        on_change=lambda: st.session_state.update(menu=st.session_state["menu_selector"])
-    )
+    menu = st.sidebar.radio("Menu", ["Login", "Registrasi"])
     
     if menu == "Login":
         login()
