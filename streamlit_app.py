@@ -19,7 +19,7 @@ def save_data(data):
 
 # Fungsi untuk registrasi akun
 def register():
-    st.subheader("📝 Registrasi Akun")
+    st.subheader("Registrasi Akun")
     username = st.text_input("Nama Pengguna")
     pin = st.text_input("Buat PIN (4 digit)", type="password")
     if st.button("Buat Akun"):
@@ -34,7 +34,7 @@ def register():
 
 # Fungsi untuk login
 def login():
-    st.subheader("🔑 Login")
+    st.subheader("Login")
     username = st.text_input("Nama Pengguna")
     pin = st.text_input("PIN", type="password")
     if st.button("Login"):
@@ -46,9 +46,9 @@ def login():
             st.session_state["username"] = username
             st.success(f"Selamat datang, {username}!")
 
-# Fungsi untuk menambah saldo
+# Fungsi untuk tambah saldo
 def tambah_saldo():
-    st.subheader("💰 Tambah Saldo")
+    st.subheader("Tambah Saldo")
     jumlah = st.number_input("Jumlah Saldo", min_value=0, step=1)
     if st.button("Tambah"):
         data[st.session_state["username"]]["saldo"] += jumlah
@@ -57,7 +57,7 @@ def tambah_saldo():
 
 # Fungsi untuk transfer
 def transfer():
-    st.subheader("📤 Transfer")
+    st.subheader("Transfer")
     penerima = st.text_input("Nama Penerima")
     jumlah = st.number_input("Jumlah Transfer", min_value=0, step=1)
     pin = st.text_input("Konfirmasi PIN", type="password")
@@ -78,13 +78,13 @@ def transfer():
 
 # Fungsi untuk cek saldo
 def cek_saldo():
-    st.subheader("📊 Cek Saldo")
+    st.subheader("Cek Saldo")
     saldo = data[st.session_state["username"]]["saldo"]
     st.info(f"Saldo Anda saat ini: {saldo}")
 
 # Fungsi untuk cek riwayat transfer
 def cek_riwayat():
-    st.subheader("🧾 Riwayat Transfer")
+    st.subheader("Riwayat Transfer")
     riwayat = data[st.session_state["username"]]["riwayat"]
     if riwayat:
         for item in riwayat:
@@ -100,30 +100,8 @@ def logout():
 # Inisialisasi data
 data = load_data()
 
-# Streamlit: Dekorasi CSS
-st.markdown("""
-    <style>
-        body {
-            background-color: #f9f9f9;
-            color: #2c3e50;
-        }
-        .css-18e3th9 {
-            padding: 20px;
-            border-radius: 15px;
-        }
-        h1, h2, h3, h4 {
-            font-family: 'Arial', sans-serif;
-            color: #3498db;
-        }
-    </style>
-""", unsafe_allow_html=True)
-
-# Streamlit: Header
-st.markdown("""
-    <div style="background-color: #3498db; padding: 15px; border-radius: 10px;">
-        <h1 style="color: white; text-align: center;">🌐 Dompet Digital</h1>
-    </div>
-""", unsafe_allow_html=True)
+# Streamlit: Logika Menu
+st.title("Dompet Digital")
 
 # Cek apakah pengguna sudah login
 if "username" in st.session_state:
