@@ -114,22 +114,6 @@ def logout():
 # Inisialisasi data
 data = load_data()
 
-# Menambahkan gambar latar belakang dari URL online
-background_url = "https://www.shutterstock.com/image-vector/digital-wallet-ewallet-online-payment-600nw-2522146297.jpg"  # Ganti dengan URL gambar yang sesuai
-st.markdown(
-    f"""
-    <style>
-    body {{
-        background-image: url('{background_url}');
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-    }}
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
 # Streamlit: Header
 st.markdown("""
     <div style="background-color: #3498db; padding: 15px; border-radius: 10px;">
