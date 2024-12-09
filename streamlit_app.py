@@ -99,8 +99,17 @@ def cek_riwayat():
 
 # Fungsi untuk logout
 def logout():
-    st.session_state.clear()
-    st.success("Anda telah logout.")
+    st.subheader("🚪 Logout")
+    st.write("Apakah Anda yakin ingin logout?")
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("Iya"):
+            st.session_state.clear()
+            st.success("Anda telah logout.")
+    with col2:
+        if st.button("Tidak"):
+            st.info("Logout dibatalkan.")
 
 # Inisialisasi data
 data = load_data()
