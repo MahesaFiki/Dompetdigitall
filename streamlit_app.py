@@ -49,7 +49,6 @@ def login():
         else:
             st.session_state["username"] = username
             st.success(f"Selamat datang, {username}!")
-            st.experimental_rerun()  # Refresh aplikasi untuk menampilkan menu utama
 
 # Fungsi untuk menambah saldo
 def tambah_saldo():
@@ -102,7 +101,6 @@ def cek_riwayat():
 def logout():
     st.session_state.clear()
     st.success("Anda telah logout.")
-    st.experimental_rerun()  # Refresh aplikasi untuk kembali ke menu login
 
 # Inisialisasi data
 data = load_data()
