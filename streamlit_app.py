@@ -17,6 +17,10 @@ def save_data(data):
     with open(DATA_FILE, "w") as file:
         json.dump(data, file, indent=4)
 
+# Fungsi untuk format Rupiah
+def format_rupiah(amount):
+    return f"Rp {amount:,.0f}".replace(",", ".")
+
 # Fungsi untuk registrasi akun
 def register():
     st.subheader("📝 Registrasi Akun")
@@ -53,7 +57,8 @@ def tambah_saldo():
     if st.button("Tambah"):
         data[st.session_state["username"]]["saldo"] += jumlah
         save_data(data)
-        st.success(f"Saldo berhasil ditambahkan. Saldo saat ini: {data[st.session_state['username']]['saldo']}")
+        saldo_terbaru = data[st.session_state["username"]]["saldo"]
+        st.success(f"Saldo berhasil ditambahkan. Saldo saat ini: {format_rupiah(saldo_terbaru)}")
 
 # Fungsi untuk transfer
 def transfer():
@@ -71,16 +76,16 @@ def transfer():
         else:
             data[st.session_state["username"]]["saldo"] -= jumlah
             data[penerima]["saldo"] += jumlah
-            data[st.session_state["username"]]["riwayat"].append(f"Transfer ke {penerima}: {jumlah}")
-            data[penerima]["riwayat"].append(f"Diterima dari {st.session_state['username']}: {jumlah}")
+            data[st.session_state["username"]]["riwayat"].append(f"Transfer ke {penerima}: {format_rupiah(jumlah)}")
+            data[penerima]["riwayat"].append(f"Diterima dari {st.session_state['username']}: {format_rupiah(jumlah)}")
             save_data(data)
-            st.success("Transfer berhasil!")
+            st.success(f"Transfer berhasil! Anda mengirim {format_rupiah(jumlah)} ke {penerima}.")
 
 # Fungsi untuk cek saldo
 def cek_saldo():
     st.subheader("📊 Cek Saldo")
     saldo = data[st.session_state["username"]]["saldo"]
-    st.info(f"Saldo Anda saat ini: {saldo}")
+    st.info(f"Saldo Anda saat ini: {format_rupiah(saldo)}")
 
 # Fungsi untuk cek riwayat transfer
 def cek_riwayat():
@@ -99,39 +104,6 @@ def logout():
 
 # Inisialisasi data
 data = load_data()
-
-# Streamlit: Animasi CSS
-st.markdown("""
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background: radial-gradient(circle, #84fab0, #8fd3f4);
-            overflow: hidden;
-        }
-        .bubble {
-            position: absolute;
-            width: 50px;
-            height: 50px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            animation: rise 10s infinite ease-in-out;
-        }
-        @keyframes rise {
-            0% { transform: translateY(100vh); opacity: 0; }
-            50% { opacity: 1; }
-            100% { transform: translateY(-10vh); opacity: 0; }
-        }
-        .bubble:nth-child(odd) { animation-duration: 12s; }
-        .bubble:nth-child(even) { animation-duration: 8s; }
-    </style>
-    <div id="bubbles">
-        <div class="bubble"></div>
-        <div class="bubble"></div>
-        <div class="bubble"></div>
-        <div class="bubble"></div>
-    </div>
-""", unsafe_allow_html=True)
 
 # Streamlit: Header
 st.markdown("""
