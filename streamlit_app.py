@@ -100,22 +100,47 @@ def logout():
 # Inisialisasi data
 data = load_data()
 
-# Streamlit: Dekorasi CSS
+# Streamlit: Animasi CSS
 st.markdown("""
     <style>
         body {
-            background-color: #f9f9f9;
-            color: #2c3e50;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(120deg, #84fab0, #8fd3f4);
+            overflow: hidden;
         }
-        .css-18e3th9 {
-            padding: 20px;
-            border-radius: 15px;
+        .bubble {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: rise 5s infinite;
         }
-        h1, h2, h3, h4 {
-            font-family: 'Arial', sans-serif;
-            color: #3498db;
+        @keyframes rise {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-1000px);
+                opacity: 0;
+            }
         }
     </style>
+    <script>
+        const bubbleContainer = document.createElement('div');
+        for (let i = 0; i < 50; i++) {
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            bubble.style.left = Math.random() * 100 + '%';
+            bubble.style.animationDelay = Math.random() * 5 + 's';
+            bubble.style.animationDuration = Math.random() * 3 + 5 + 's';
+            bubble.style.width = bubble.style.height = Math.random() * 15 + 5 + 'px';
+            bubbleContainer.appendChild(bubble);
+        }
+        document.body.appendChild(bubbleContainer);
+    </script>
 """, unsafe_allow_html=True)
 
 # Streamlit: Header
