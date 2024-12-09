@@ -1,6 +1,7 @@
 import streamlit as st
 import json
 import os
+import bcrypt
 
 # File untuk menyimpan data
 DATA_FILE = "dompet_digital.json"
@@ -21,6 +22,14 @@ def save_data(data):
 def format_rupiah(amount):
     return f"Rp {amount:,.0f}".replace(",", ".")
 
+# Fungsi untuk membuat hash dari PIN
+def hash_pin(pin):
+    return bcrypt.hashpw(pin.encode(), bcrypt.gensalt()).decode()
+
+# Fungsi untuk memverifikasi PIN dengan hash yang tersimpan
+def verify_pin(pin, hashed_pin):
+    return bcrypt.checkpw(pin.encode(), hashed_pin.encode())
+
 # Fungsi untuk registrasi akun
 def register():
     st.subheader("📝 Registrasi Akun")
@@ -32,7 +41,8 @@ def register():
         elif len(pin) != 6 or not pin.isdigit():
             st.error("PIN harus 6 digit angka!")
         else:
-            data[username] = {"pin": pin, "saldo": 0, "riwayat": []}
+            hashed_pin = hash_pin(pin)
+            data[username] = {"pin": hashed_pin, "saldo": 0, "riwayat": []}
             save_data(data)
             st.success("Akun berhasil dibuat!")
 
@@ -44,7 +54,7 @@ def login():
     if st.button("Login"):
         if username not in data:
             st.error("Akun tidak ditemukan!")
-        elif data[username]["pin"] != pin:
+        elif not verify_pin(pin, data[username]["pin"]):
             st.error("PIN salah!")
         else:
             st.session_state["username"] = username
@@ -60,6 +70,25 @@ def tambah_saldo():
         saldo_terbaru = data[st.session_state["username"]]["saldo"]
         st.success(f"Saldo berhasil ditambahkan. Saldo saat ini: {format_rupiah(saldo_terbaru)}")
 
+# Fungsi untuk tarik saldo
+def tarik_saldo():
+    st.subheader("🏧 Tarik Saldo")
+    jumlah = st.number_input("Jumlah Tarik", min_value=0, step=1)
+    pin = st.text_input("Konfirmasi PIN", type="password")
+    if st.button("Tarik"):
+        if jumlah <= 0:
+            st.error("Jumlah tarik harus lebih besar dari 0!")
+        elif jumlah > data[st.session_state["username"]]["saldo"]:
+            st.error("Saldo tidak cukup!")
+        elif not verify_pin(pin, data[st.session_state["username"]]["pin"]):
+            st.error("PIN salah!")
+        else:
+            data[st.session_state["username"]]["saldo"] -= jumlah
+            data[st.session_state["username"]]["riwayat"].append(f"Tarik saldo: {format_rupiah(jumlah)}")
+            save_data(data)
+            saldo_terbaru = data[st.session_state["username"]]["saldo"]
+            st.success(f"Penarikan berhasil. Sisa saldo Anda: {format_rupiah(saldo_terbaru)}")
+
 # Fungsi untuk transfer
 def transfer():
     st.subheader("📤 Transfer")
@@ -71,7 +100,7 @@ def transfer():
             st.error("Penerima tidak ditemukan!")
         elif jumlah <= 0 or jumlah > data[st.session_state["username"]]["saldo"]:
             st.error("Saldo tidak cukup atau jumlah tidak valid!")
-        elif data[st.session_state["username"]]["pin"] != pin:
+        elif not verify_pin(pin, data[st.session_state["username"]]["pin"]):
             st.error("PIN salah!")
         else:
             data[st.session_state["username"]]["saldo"] -= jumlah
@@ -101,7 +130,6 @@ def cek_riwayat():
 def logout():
     st.subheader("🚪 Logout")
     st.write("Apakah Anda yakin ingin logout?")
-    
     col1, col2 = st.columns(2)
     with col1:
         if st.button("Iya"):
@@ -124,10 +152,12 @@ st.markdown("""
 # Cek apakah pengguna sudah login
 if "username" in st.session_state:
     st.sidebar.subheader(f"Selamat datang, {st.session_state['username']}!")
-    menu = st.sidebar.radio("Menu", ["Tambah Saldo", "Transfer", "Cek Saldo", "Riwayat Transfer", "Logout"])
+    menu = st.sidebar.radio("Menu", ["Tambah Saldo", "Tarik Saldo", "Transfer", "Cek Saldo", "Riwayat Transfer", "Logout"])
     
     if menu == "Tambah Saldo":
         tambah_saldo()
+    elif menu == "Tarik Saldo":
+        tarik_saldo()
     elif menu == "Transfer":
         transfer()
     elif menu == "Cek Saldo":
